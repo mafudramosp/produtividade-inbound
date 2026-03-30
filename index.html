@@ -1017,9 +1017,11 @@ function salvarRegistro() {
 async function sheetsRequest(payload) {
   if (!SHEETS_URL) return null;
   try {
-    const res = await fetch(SHEETS_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
+    // Usa GET com payload encodado na URL para evitar bloqueio de CORS
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    const res = await fetch(SHEETS_URL + '?payload=' + encoded, {
+      method: 'GET',
+      redirect: 'follow'
     });
     return await res.json();
   } catch(e) {
