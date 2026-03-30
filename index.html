@@ -1111,6 +1111,10 @@ async function carregarDoSheets() {
   }
 }
 
+function salvarStorage() {
+  localStorage.setItem('prod_inbound', JSON.stringify(registros));
+}
+
 async function salvarNoSheets(reg) {
   const r = await sheetsRequest({ acao: 'salvar', registro: reg });
   if (r && r.status === 'ok') mostrarSyncStatus('ok');
