@@ -991,45 +991,54 @@ function validarFormulario() {
 
 // ===================== SALVAR =====================
 function salvarRegistro() {
-  if(!validarFormulario()) { return; }
-  const reg = {
-    id: Date.now(),
-    turno: (function() {
-      // Usa o horário de início para definir o turno corretamente
-      if(dataInicio) {
-        const h = dataInicio.getHours(), m = dataInicio.getMinutes();
-        const totalMin = h*60+m;
-        if(totalMin >= 6*60 && totalMin < 14*60+48) return '1º Turno';
-        if(totalMin >= 14*60+48 && totalMin < 22*60+30) return '2º Turno';
-        return '3º Turno';
-      }
-      return turnoSelecionado;
-    })(),
-    tipo: tipoSelecionado,
-    frota: document.getElementById('f-frota').value,
-    mac: document.getElementById('f-mac').value,
-    origem: document.getElementById('f-origem').value,
-    conferente: document.getElementById('f-conferente').value,
-    inicio: dataInicio ? dataInicio.toISOString() : null,
-    fim: dataFim ? dataFim.toISOString() : null,
-    paletizadas: parseInt(document.getElementById('f-paletizadas').value) || 0,
-    soltas: parseInt(document.getElementById('f-soltas').value) || 0,
-    peso: parseFloat(document.getElementById('f-peso').value) || 0,
-    obs: document.getElementById('f-obs').value,
-    status: dataFim ? 'Finalizado' : 'Em andamento',
-    data: (dataInicio || new Date()).toLocaleDateString('pt-BR')
-  };
-  registros.unshift(reg);
-  salvarStorage();
-  popularFiltrosMes();
-  renderDashboard();
-  renderTabela2();
-  toast('Registro salvo com sucesso!', 'success');
-  limparFormulario();
-  showPage('dashboard');
-  // Envia para Sheets em background sem bloquear a UI
-  salvarNoSheets(reg);
+  try {
+    if(!validarFormulario()) { return; }
+
+    // Garante dataInicio — se não clicou em Iniciar, usa hora atual
+    if(!dataInicio) dataInicio = new Date();
+
+    const h = dataInicio.getHours(), m = dataInicio.getMinutes();
+    const totalMin = h*60+m;
+    let turnoFinal;
+    if(totalMin >= 6*60 && totalMin < 14*60+48) turnoFinal = '1º Turno';
+    else if(totalMin >= 14*60+48 && totalMin < 22*60+30) turnoFinal = '2º Turno';
+    else turnoFinal = '3º Turno';
+
+    const reg = {
+      id: Date.now(),
+      turno: turnoFinal,
+      tipo: tipoSelecionado,
+      frota: document.getElementById('f-frota').value.trim(),
+      mac: document.getElementById('f-mac').value.trim(),
+      origem: document.getElementById('f-origem').value.trim(),
+      conferente: document.getElementById('f-conferente').value.trim(),
+      inicio: dataInicio ? dataInicio.toISOString() : null,
+      fim: dataFim ? dataFim.toISOString() : null,
+      paletizadas: parseInt(document.getElementById('f-paletizadas').value) || 0,
+      soltas: parseInt(document.getElementById('f-soltas').value) || 0,
+      peso: parseFloat(document.getElementById('f-peso').value) || 0,
+      obs: document.getElementById('f-obs').value || '',
+      status: dataFim ? 'Finalizado' : 'Em andamento',
+      data: dataInicio.toLocaleDateString('pt-BR')
+    };
+
+    registros.unshift(reg);
+    salvarStorage();
+    popularFiltrosMes();
+    renderDashboard();
+    renderTabela2();
+    toast('Registro salvo com sucesso!', 'success');
+    limparFormulario();
+    showPage('dashboard');
+    // Envia para Sheets em background
+    salvarNoSheets(reg);
+  } catch(e) {
+    console.error('Erro ao salvar:', e);
+    toast('Erro ao salvar: ' + e.message, 'error');
+  }
 }
+
+
 // ============================================================
 //  GOOGLE SHEETS — camada de sync
 // ============================================================
