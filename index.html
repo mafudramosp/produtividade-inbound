@@ -1002,26 +1002,25 @@ function salvarRegistro() {
   };
   registros.unshift(reg);
   salvarStorage();
-  salvarNoSheets(reg);
-  // Atualiza todos os filtros e telas
   popularFiltrosMes();
   renderDashboard();
   renderTabela2();
   toast('Registro salvo com sucesso!', 'success');
   limparFormulario();
   showPage('dashboard');
+  // Envia para Sheets em background sem bloquear a UI
+  salvarNoSheets(reg);
 }
 // ============================================================
 //  GOOGLE SHEETS — camada de sync
 // ============================================================
+
 async function sheetsRequest(payload) {
   if (!SHEETS_URL) return null;
   try {
-    // Usa GET com payload encodado na URL para evitar bloqueio de CORS
     const encoded = encodeURIComponent(JSON.stringify(payload));
     const res = await fetch(SHEETS_URL + '?payload=' + encoded, {
-      method: 'GET',
-      redirect: 'follow'
+      method: 'GET', redirect: 'follow'
     });
     return await res.json();
   } catch(e) {
@@ -1030,87 +1029,68 @@ async function sheetsRequest(payload) {
   }
 }
 
+// Converte data do Sheets (ISO ou YYYY-MM-DD) para DD/MM/YYYY
+function normalizarData(str) {
+  if(!str) return '';
+  if(str.includes('/')) return str; // já está no formato certo
+  if(str.includes('T')) {
+    const d = new Date(str);
+    return d.toLocaleDateString('pt-BR');
+  }
+  if(str.match(/^\d{4}-\d{2}-\d{2}/)) {
+    const [a,m,d] = str.substring(0,10).split('-');
+    return d + '/' + m + '/' + a;
+  }
+  return str;
+}
+
 async function carregarDoSheets() {
   if (!SHEETS_URL) return;
   mostrarSyncStatus('carregando');
   try {
-    const res = await fetch(SHEETS_URL);
+    const res = await fetch(SHEETS_URL, { redirect: 'follow' });
     const json = await res.json();
-    if (json.status === 'ok' && Array.isArray(json.data)) {
-      const dadosLocais = JSON.parse(localStorage.getItem('prod_inbound') || '[]');
-      if (json.data.length > 0) {
-        // Sheets tem dados
-        if (json.data.length >= dadosLocais.length) {
-          // Sheets tem mais ou igual — usa Sheets como fonte de verdade
-          registros = json.data.map(r => {
-            // Converte campo 'data' de ISO para DD/MM/YYYY se necessário
-            let dataFormatada = r.data || '';
-            if (dataFormatada && dataFormatada.includes('T')) {
-              // É formato ISO (2026-03-27T...) — converte para DD/MM/YYYY
-              const d = new Date(dataFormatada);
-              dataFormatada = d.toLocaleDateString('pt-BR');
-            } else if (dataFormatada && dataFormatada.includes('-') && !dataFormatada.includes('/')) {
-              // É formato YYYY-MM-DD — converte para DD/MM/YYYY
-              const [a, m, dia] = dataFormatada.split('-');
-              dataFormatada = dia + '/' + m + '/' + a;
-            }
-            return {
-              ...r,
-              id: Number(r.id) || r.id,
-              paletizadas: Number(r.paletizadas)||0,
-              soltas: Number(r.soltas)||0,
-              peso: Number(r.peso)||0,
-              data: dataFormatada
-            };
-          });
-          localStorage.setItem('prod_inbound', JSON.stringify(registros));
-          popularFiltrosMes();
-          renderDashboard();
-          renderTabela2();
-        }
-        // Se local tem mais, não sobrescreve (aguarda próximo save sincronizar)
-      } else if (dadosLocais.length > 0) {
-        // Sheets vazio mas temos dados locais — sobe para o Sheets
-        await sheetsRequest({ acao: 'sync', registros: dadosLocais });
+    if (json.status === 'ok' && Array.isArray(json.data) && json.data.length > 0) {
+      // Sheets tem dados — normaliza e usa como fonte de verdade
+      const dadosSheets = json.data.map(r => ({
+        ...r,
+        id: Number(r.id) || r.id,
+        paletizadas: Number(r.paletizadas) || 0,
+        soltas: Number(r.soltas) || 0,
+        peso: Number(r.peso) || 0,
+        data: normalizarData(r.data)
+      }));
+      registros = dadosSheets;
+      localStorage.setItem('prod_inbound', JSON.stringify(registros));
+      popularFiltrosMes();
+      renderDashboard();
+      renderTabela2();
+      mostrarSyncStatus('ok');
+    } else {
+      // Sheets vazio — envia dados locais se tiver
+      const locais = JSON.parse(localStorage.getItem('prod_inbound') || '[]');
+      if (locais.length > 0) {
+        const r = await sheetsRequest({ acao: 'sync', registros: locais });
+        if (r && r.status === 'ok') mostrarSyncStatus('ok');
+        else mostrarSyncStatus('erro');
+      } else {
+        mostrarSyncStatus('ok');
       }
     }
-    mostrarSyncStatus('ok');
   } catch(e) {
+    console.warn('Sync error:', e);
     mostrarSyncStatus('erro');
   }
-}
-
-function mostrarSyncStatus(estado) {
-  const el = document.getElementById('sync-status');
-  if (!el) return;
-  if (estado === 'carregando') {
-    el.textContent = '⟳ Sincronizando...';
-    el.style.color = '#f59e0b';
-  } else if (estado === 'ok') {
-    el.textContent = '✓ Sincronizado';
-    el.style.color = '#00B200';
-    setTimeout(() => { if(el) el.textContent = ''; }, 3000);
-  } else {
-    el.textContent = '⚠ Sem conexão (dados locais)';
-    el.style.color = '#ef4444';
-  }
-}
-
-function salvarStorage() {
-  localStorage.setItem('prod_inbound', JSON.stringify(registros));
 }
 
 async function salvarNoSheets(reg) {
   const r = await sheetsRequest({ acao: 'salvar', registro: reg });
-  if (r && r.status === 'ok') {
-    mostrarSyncStatus('ok');
-  } else {
-    // Falhou — tenta sync completo como fallback
+  if (r && r.status === 'ok') mostrarSyncStatus('ok');
+  else {
+    // Fallback: sync completo
     mostrarSyncStatus('erro');
     const locais = JSON.parse(localStorage.getItem('prod_inbound') || '[]');
-    if (locais.length > 0) {
-      await sheetsRequest({ acao: 'sync', registros: locais });
-    }
+    await sheetsRequest({ acao: 'sync', registros: locais });
   }
 }
 
@@ -1126,7 +1106,7 @@ async function apagarNoSheets(ids) {
   else mostrarSyncStatus('erro');
 }
 
-// Auto-sync a cada 2 minutos (menos agressivo)
+// Auto-sync a cada 2 minutos
 setInterval(() => { if (SHEETS_URL) carregarDoSheets(); }, 120000);
 
 // ===================== LIMPAR FORM =====================
@@ -2496,17 +2476,8 @@ popularFiltrosMes();
 renderDashboard();
 atualizarIconeTema(document.body.classList.contains('dark-theme'));
 if (SHEETS_URL) {
-  // Só carrega do Sheets se não tiver dados locais
-  const dadosLocaisInit = JSON.parse(localStorage.getItem('prod_inbound') || '[]');
-  if (dadosLocaisInit.length === 0) {
-    setTimeout(carregarDoSheets, 1000);
-  } else {
-    // Tem dados locais — sobe para Sheets em background
-    setTimeout(async () => {
-      const r = await sheetsRequest({ acao: 'sync', registros: dadosLocaisInit });
-      if (r && r.status === 'ok') mostrarSyncStatus('ok');
-    }, 2000);
-  }
+  // Sempre carrega do Sheets ao abrir — é a fonte de verdade
+  setTimeout(carregarDoSheets, 1000);
 }
 
 
