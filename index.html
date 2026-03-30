@@ -282,26 +282,26 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
             <div class="dark-card" style="padding:14px;border-radius:12px;">
               <div style="font-size:11px;color:#888;line-height:1.4;">Peso total descarregado</div>
-              <div id="dash-peso-total" style="font-size:24px;font-weight:700;color:#fff;margin-top:6px;">0</div>
+              <div id="dash-peso-total" style="font-size:24px;font-weight:700;color:var(--text);margin-top:6px;">0</div>
               <div style="height:1px;background:linear-gradient(to right,#00B200,transparent);margin-top:8px;"></div>
             </div>
             <div class="dark-card" style="padding:14px;border-radius:12px;">
               <div style="font-size:11px;color:#888;line-height:1.4;">Qtd. veículos</div>
-              <div id="dash-qtd-veiculos" style="font-size:24px;font-weight:700;color:#fff;margin-top:6px;">0</div>
+              <div id="dash-qtd-veiculos" style="font-size:24px;font-weight:700;color:var(--text);margin-top:6px;">0</div>
               <div style="height:1px;background:linear-gradient(to right,#00B200,transparent);margin-top:8px;"></div>
             </div>
             <div class="dark-card" style="padding:14px;border-radius:12px;">
-              <div style="font-size:11px;color:#888;margin-bottom:6px;line-height:1.4;">Maior tempo em descarregamento</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.4;">Maior tempo em descarregamento</div>
               <div id="dash-maior-tempo-origem" style="font-size:12px;color:#ef4444;font-weight:700;">—</div>
               <div id="dash-maior-tempo-val" style="font-size:11px;color:#ef4444;margin-top:2px;">—</div>
-              <div id="dash-maior-tempo-data" style="font-size:10px;color:#555;margin-top:2px;">—</div>
+              <div id="dash-maior-tempo-data" style="font-size:10px;color:var(--text3);margin-top:2px;">—</div>
               <div style="height:1px;background:linear-gradient(to right,#ef4444,transparent);margin-top:8px;"></div>
             </div>
             <div class="dark-card" style="padding:14px;border-radius:12px;">
-              <div style="font-size:11px;color:#888;margin-bottom:6px;line-height:1.4;">Menor tempo em descarregamento</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.4;">Menor tempo em descarregamento</div>
               <div id="dash-menor-tempo-origem" style="font-size:12px;color:#00B200;font-weight:700;">—</div>
               <div id="dash-menor-tempo-val" style="font-size:11px;color:#00B200;margin-top:2px;">—</div>
-              <div id="dash-menor-tempo-data" style="font-size:10px;color:#555;margin-top:2px;">—</div>
+              <div id="dash-menor-tempo-data" style="font-size:10px;color:var(--text3);margin-top:2px;">—</div>
               <div style="height:1px;background:linear-gradient(to right,#00B200,transparent);margin-top:8px;"></div>
             </div>
           </div>
@@ -309,7 +309,7 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
           <div style="display:grid;grid-template-columns:260px 1fr;gap:14px;margin-bottom:14px;align-items:start;">
             <div style="display:flex;flex-direction:column;gap:12px;">
               <div class="dark-card" style="border-radius:12px;padding:16px 12px;text-align:center;">
-                <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚙ Eficiência do turno</div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚙ Eficiência do turno</div>
                 <div style="margin:6px auto 0;width:200px;position:relative;">
                   <svg viewBox="0 0 200 110" width="100%" style="display:block;overflow:visible;">
                     <path d="M 18 105 A 82 82 0 0 1 182 105" fill="none" stroke="#4a4a4a" stroke-width="22" stroke-linecap="round"/>
@@ -323,14 +323,14 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
                   <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
                     <span style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #00B200;display:inline-block;"></span>
                     <div>
-                      <div style="font-size:10px;color:#aaa;font-weight:600;">Tempo total realizado</div>
+                      <div style="font-size:10px;color:var(--text2);font-weight:600;">Tempo total realizado</div>
                       <div id="dash-tempo-real" style="font-size:14px;font-weight:700;color:#00B200;">—</div>
                     </div>
                   </div>
                   <div style="display:flex;align-items:center;gap:6px;">
                     <span style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #00B200;display:inline-block;"></span>
                     <div>
-                      <div style="font-size:10px;color:#aaa;font-weight:600;">Tempo projetado</div>
+                      <div style="font-size:10px;color:var(--text2);font-weight:600;">Tempo projetado</div>
                       <div id="dash-tempo-proj" style="font-size:14px;font-weight:700;color:#00B200;">—</div>
                     </div>
                   </div>
@@ -890,6 +890,19 @@ function detectarTurno() {
   else t = '3º Turno';
   const opts = document.querySelectorAll('.turno-opt');
   opts.forEach(o => { if(o.dataset.turno === t) { selecionarTurno(o); } });
+  // Resetar timer ao abrir o formulário
+  dataInicio = null;
+  dataFim = null;
+  const dispI = document.getElementById('disp-inicio');
+  const dispF = document.getElementById('disp-fim');
+  const btnI  = document.getElementById('btn-iniciar');
+  const btnF  = document.getElementById('btn-finalizar');
+  if(dispI) { dispI.textContent = '--:--'; dispI.classList.remove('filled'); }
+  if(dispF) { dispF.textContent = '--:--'; dispF.classList.remove('filled'); }
+  if(btnI)  { btnI.disabled = false; }
+  if(btnF)  { btnF.disabled = true; }
+  const errT = document.getElementById('err-tempo');
+  if(errT)  { errT.style.display = 'none'; errT.classList.remove('show'); }
 }
 function selecionarTurno(el) {
   document.querySelectorAll('.turno-opt').forEach(o => o.className = 'turno-opt');
@@ -959,20 +972,26 @@ function validarCampo(campo) {
 }
 function validarFormulario() {
   let ok = true;
-  if(!turnoSelecionado) { document.getElementById('err-turno').classList.add('show'); ok = false; }
-  if(!tipoSelecionado) { document.getElementById('err-tipo').classList.add('show'); ok = false; }
-  if(!validarCampo('frota')) ok = false;
-  if(!validarCampo('mac')) ok = false;
-  if(!validarCampo('origem')) ok = false;
-  if(!validarCampo('conferente')) ok = false;
-  if(!validarCampo('peso')) ok = false;
-  if(!dataInicio) { document.getElementById('err-tempo').textContent = 'Registre o início do descarregamento'; document.getElementById('err-tempo').classList.add('show'); ok = false; }
+  const erros = [];
+  if(!turnoSelecionado) { document.getElementById('err-turno').classList.add('show'); ok = false; erros.push('Turno'); }
+  if(!tipoSelecionado) { document.getElementById('err-tipo').classList.add('show'); ok = false; erros.push('Tipo de descarga'); }
+  if(!validarCampo('frota')) { ok = false; erros.push('Frota'); }
+  if(!validarCampo('mac')) { ok = false; erros.push('MAC/MEC'); }
+  if(!validarCampo('origem')) { ok = false; erros.push('Origem'); }
+  if(!validarCampo('conferente')) { ok = false; erros.push('Conferente'); }
+  if(!validarCampo('peso')) { ok = false; erros.push('Peso'); }
+  if(!dataInicio) {
+    document.getElementById('err-tempo').textContent = 'Registre o início do descarregamento';
+    document.getElementById('err-tempo').style.display = 'block';
+    ok = false; erros.push('Horário de início');
+  }
+  if(!ok) toast('Campos obrigatórios: ' + erros.join(', '), 'error');
   return ok;
 }
 
 // ===================== SALVAR =====================
 function salvarRegistro() {
-  if(!validarFormulario()) { toast('Corrija os campos em vermelho antes de salvar.', 'error'); return; }
+  if(!validarFormulario()) { return; }
   const reg = {
     id: Date.now(),
     turno: (function() {
