@@ -1042,9 +1042,27 @@ async function carregarDoSheets() {
         // Sheets tem dados
         if (json.data.length >= dadosLocais.length) {
           // Sheets tem mais ou igual — usa Sheets como fonte de verdade
-          registros = json.data.map(r => ({ ...r, id: Number(r.id) || r.id,
-            paletizadas: Number(r.paletizadas)||0, soltas: Number(r.soltas)||0,
-            peso: Number(r.peso)||0 }));
+          registros = json.data.map(r => {
+            // Converte campo 'data' de ISO para DD/MM/YYYY se necessário
+            let dataFormatada = r.data || '';
+            if (dataFormatada && dataFormatada.includes('T')) {
+              // É formato ISO (2026-03-27T...) — converte para DD/MM/YYYY
+              const d = new Date(dataFormatada);
+              dataFormatada = d.toLocaleDateString('pt-BR');
+            } else if (dataFormatada && dataFormatada.includes('-') && !dataFormatada.includes('/')) {
+              // É formato YYYY-MM-DD — converte para DD/MM/YYYY
+              const [a, m, dia] = dataFormatada.split('-');
+              dataFormatada = dia + '/' + m + '/' + a;
+            }
+            return {
+              ...r,
+              id: Number(r.id) || r.id,
+              paletizadas: Number(r.paletizadas)||0,
+              soltas: Number(r.soltas)||0,
+              peso: Number(r.peso)||0,
+              data: dataFormatada
+            };
+          });
           localStorage.setItem('prod_inbound', JSON.stringify(registros));
           popularFiltrosMes();
           renderDashboard();
@@ -1255,8 +1273,14 @@ function inputDateToBR(val) {
 }
 function parseDateBR(str) {
   if(!str) return null;
-  const [d,m,a] = str.split('/').map(Number);
-  return new Date(a, m-1, d);
+  if(str.includes('/')) {
+    const [d,m,a] = str.split('/').map(Number);
+    return new Date(a, m-1, d);
+  }
+  if(str.includes('T') || (str.includes('-') && str.length >= 10)) {
+    return new Date(str);
+  }
+  return null;
 }
 
 // ===================== DASHBOARD =====================
