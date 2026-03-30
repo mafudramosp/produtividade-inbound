@@ -454,7 +454,7 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
               <div class="form-grid cols3">
                 <div class="form-group">
                   <label>Frota <span class="req">*</span></label>
-                  <input type="number" class="form-control" id="f-frota" placeholder="Ex: 9309" oninput="validarCampo('frota')">
+                  <input type="text" class="form-control" id="f-frota" placeholder="Ex: 9309 ou AB123" oninput="validarCampo('frota')">
                   <span class="error-msg" id="err-frota">Campo obrigatório</span>
                 </div>
                 <div class="form-group">
@@ -576,24 +576,24 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
 
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
             <div class="dark-card" style="border-radius:12px;padding:14px;">
-              <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Pico de peso (dia)</div>
-              <div id="ak-pico-peso" style="font-size:22px;font-weight:700;color:#fff;">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Pico de peso (dia)</div>
+              <div id="ak-pico-peso" style="font-size:22px;font-weight:700;color:var(--text);">—</div>
               <div id="ak-pico-peso-dia" style="font-size:11px;color:#00B200;margin-top:3px;">—</div>
             </div>
             <div class="dark-card" style="border-radius:12px;padding:14px;">
-              <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Pico de veículos (dia)</div>
-              <div id="ak-pico-veic" style="font-size:22px;font-weight:700;color:#fff;">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Pico de veículos (dia)</div>
+              <div id="ak-pico-veic" style="font-size:22px;font-weight:700;color:var(--text);">—</div>
               <div id="ak-pico-veic-dia" style="font-size:11px;color:#f59e0b;margin-top:3px;">—</div>
             </div>
             <div class="dark-card" style="border-radius:12px;padding:14px;">
-              <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Total de peso</div>
-              <div id="ak-total-peso" style="font-size:22px;font-weight:700;color:#fff;">—</div>
-              <div style="font-size:11px;color:#555;margin-top:3px;">no período</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Total de peso</div>
+              <div id="ak-total-peso" style="font-size:22px;font-weight:700;color:var(--text);">—</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:3px;">no período</div>
             </div>
             <div class="dark-card" style="border-radius:12px;padding:14px;">
-              <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Média tempo desc.</div>
-              <div id="ak-media-tempo" style="font-size:22px;font-weight:700;color:#fff;">—</div>
-              <div style="font-size:11px;color:#555;margin-top:3px;">por veículo</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;">Média tempo desc.</div>
+              <div id="ak-media-tempo" style="font-size:22px;font-weight:700;color:var(--text);">—</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:3px;">por veículo</div>
             </div>
           </div>
 
@@ -1529,7 +1529,7 @@ function renderCharts(regs) {
         labels,
         datasets: [{
           label: 'Veículos', data: qtdData,
-          backgroundColor: '#f59e0b', borderRadius: 4, borderSkipped: false,
+          backgroundColor: '#ED5F21', borderRadius: 4, borderSkipped: false,
           showLabels: true, labelFormat: 'number'
         }]
       },
@@ -2063,11 +2063,15 @@ function renderAnalise() {
   const mediaTempoVal = tempoDia.filter(v=>v>0).length
     ? tempoDia.filter(v=>v>0).reduce((s,v)=>s+v,0) / tempoDia.filter(v=>v>0).length : 0;
 
+  document.getElementById('ak-pico-peso').style.color = 'var(--accent)';
   document.getElementById('ak-pico-peso').textContent = picoPesoVal.toLocaleString('pt-BR');
   document.getElementById('ak-pico-peso-dia').textContent = picoPesoDia ? 'dia ' + picoPesoDia : '—';
+  document.getElementById('ak-pico-veic').style.color = 'var(--accent)';
   document.getElementById('ak-pico-veic').textContent = picoVeicVal;
   document.getElementById('ak-pico-veic-dia').textContent = picoVeicDia ? 'dia ' + picoVeicDia : '—';
+  document.getElementById('ak-total-peso').style.color = 'var(--text)';
   document.getElementById('ak-total-peso').textContent = totalPeso.toLocaleString('pt-BR');
+  document.getElementById('ak-media-tempo').style.color = 'var(--text)';
   document.getElementById('ak-media-tempo').textContent = hToHHMM(mediaTempoVal);
 
   const periodoLabel = analiseTab === 'mes'
@@ -2086,7 +2090,8 @@ function renderAnalise() {
   if(chartAnaliseVeic)  { chartAnaliseVeic.destroy();  chartAnaliseVeic  = null; }
   if(chartAnaliseTempo) { chartAnaliseTempo.destroy();  chartAnaliseTempo = null; }
 
-  const gridColor = '#222', tickColor = '#777';
+  const isDarkTheme = document.body.classList.contains('dark-theme');
+  const gridColor = isDarkTheme ? '#2a2a2a' : 'rgba(0,0,0,0.08)', tickColor = isDarkTheme ? '#777' : '#999';
   const baseOpts = (yLabel) => ({
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false }, tooltip: {} },
@@ -2117,7 +2122,7 @@ function renderAnalise() {
     type: 'bar',
     data: { labels, datasets: [{
       label: 'Veículos', data: veicDia,
-      backgroundColor: veicDia.map(v => v === picoVeicVal && picoVeicVal > 0 ? '#fbbf24' : '#f59e0b'),
+      backgroundColor: veicDia.map(v => v === picoVeicVal && picoVeicVal > 0 ? '#ff7a3d' : '#ED5F21'),
       borderRadius: 5, borderSkipped: false,
       showLabels: true, labelFormat: 'number'
     }]},
