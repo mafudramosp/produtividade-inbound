@@ -503,23 +503,37 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
               <h3>Horário de descarregamento</h3>
             </div>
             <div class="form-card-body">
-              <div class="timer-section">
-                <div>
-                  <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:6px;">Início</div>
-                  <div class="timer-display empty" id="disp-inicio">--:--</div>
+              <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+                <!-- INÍCIO -->
+                <div style="flex:1;min-width:140px;">
+                  <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:6px;">Início <span class="req">*</span></div>
+                  <input type="text" id="f-hora-inicio" class="form-control"
+                    placeholder="Ex: 1401"
+                    maxlength="5"
+                    oninput="formatarHora(this, 'inicio')"
+                    style="font-size:20px;font-weight:700;letter-spacing:2px;text-align:center;">
+                  <div style="font-size:10px;color:var(--text3);margin-top:4px;">Digite 4 números: 1401 → 14:01</div>
                 </div>
-                <button class="btn btn-primary" id="btn-iniciar" onclick="registrarInicio()">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Iniciar
-                </button>
-                <div>
+                <!-- FIM -->
+                <div style="flex:1;min-width:140px;">
                   <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:6px;">Fim</div>
-                  <div class="timer-display empty" id="disp-fim">--:--</div>
+                  <input type="text" id="f-hora-fim" class="form-control"
+                    placeholder="Ex: 1530"
+                    maxlength="5"
+                    oninput="formatarHora(this, 'fim')"
+                    style="font-size:20px;font-weight:700;letter-spacing:2px;text-align:center;">
+                  <div style="font-size:10px;color:var(--text3);margin-top:4px;">Deixe vazio para "Em andamento"</div>
                 </div>
-                <button class="btn" id="btn-finalizar" onclick="registrarFim()" disabled>
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>Finalizar
-                </button>
               </div>
-              <span class="error-msg" id="err-tempo" style="margin-top:8px;display:none;"></span>
+              <div id="err-tempo" style="margin-top:10px;display:none;font-size:12px;color:var(--danger);background:var(--danger-bg);border:1px solid var(--danger);border-radius:8px;padding:10px 14px;"></div>
+              <!-- Modal de confirmação de horário suspeito -->
+              <div id="horario-confirm" style="display:none;margin-top:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 14px;">
+                <div id="horario-confirm-msg" style="font-size:13px;color:#856404;margin-bottom:10px;"></div>
+                <div style="display:flex;gap:8px;">
+                  <button onclick="confirmarHorario()" style="padding:7px 16px;border-radius:7px;border:none;background:#00B200;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">✓ Confirmar horário</button>
+                  <button onclick="cancelarHorario()" style="padding:7px 16px;border-radius:7px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:12px;cursor:pointer;font-family:inherit;">✗ Cancelar</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -891,19 +905,16 @@ function detectarTurno() {
   else t = '3º Turno';
   const opts = document.querySelectorAll('.turno-opt');
   opts.forEach(o => { if(o.dataset.turno === t) { selecionarTurno(o); } });
-  // Resetar timer ao abrir o formulário
+  // Resetar campos de horário ao abrir o formulário
   dataInicio = null;
   dataFim = null;
-  const dispI = document.getElementById('disp-inicio');
-  const dispF = document.getElementById('disp-fim');
-  const btnI  = document.getElementById('btn-iniciar');
-  const btnF  = document.getElementById('btn-finalizar');
-  if(dispI) { dispI.textContent = '--:--'; dispI.classList.remove('filled'); }
-  if(dispF) { dispF.textContent = '--:--'; dispF.classList.remove('filled'); }
-  if(btnI)  { btnI.disabled = false; }
-  if(btnF)  { btnF.disabled = true; }
-  const errT = document.getElementById('err-tempo');
-  if(errT)  { errT.style.display = 'none'; errT.classList.remove('show'); }
+  horarioSuspeito = false;
+  const fInicio = document.getElementById('f-hora-inicio');
+  const fFim    = document.getElementById('f-hora-fim');
+  if(fInicio) { fInicio.value = ''; fInicio.classList.remove('error'); }
+  if(fFim)    { fFim.value = '';    fFim.classList.remove('error'); }
+  esconderErroTempo();
+  esconderConfirmacao();
 }
 function selecionarTurno(el) {
   document.querySelectorAll('.turno-opt').forEach(o => o.className = 'turno-opt');
@@ -919,18 +930,148 @@ function selecionarTipo(el) {
   document.getElementById('err-tipo').classList.remove('show');
 }
 
-// ===================== TIMER =====================
-function registrarInicio() {
-  dataInicio = new Date();
-  const disp = document.getElementById('disp-inicio');
-  disp.textContent = dataInicio.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-  disp.classList.add('filled');
-  document.getElementById('btn-iniciar').disabled = true;
-  document.getElementById('btn-finalizar').disabled = false;
-  document.getElementById('err-tempo').classList.remove('show');
-  // Recalcula turno pelo horário de início real
-  atualizarTurnoPorHorario(dataInicio);
+// ===================== TIMER MANUAL =====================
+let horarioSuspeito = false; // flag para confirmação
+
+function formatarHora(el, tipo) {
+  // Remove tudo que não é dígito
+  let val = el.value.replace(/\D/g, '');
+  
+  // Formata enquanto digita
+  if(val.length > 4) val = val.slice(0,4);
+  
+  // Adiciona : automaticamente após 2 dígitos
+  if(val.length > 2) {
+    el.value = val.slice(0,2) + ':' + val.slice(2);
+  } else {
+    el.value = val;
+  }
+
+  // Só valida quando tiver 4 dígitos (HH:MM completo)
+  if(val.length === 4) {
+    const hh = parseInt(val.slice(0,2));
+    const mm = parseInt(val.slice(2,4));
+    
+    // Hora inválida
+    if(hh > 23 || mm > 59) {
+      mostrarErroTempo('Horário inválido. Use formato HH:MM (ex: 14:01)');
+      el.classList.add('error');
+      if(tipo === 'inicio') dataInicio = null;
+      else dataFim = null;
+      return;
+    }
+    
+    el.classList.remove('error');
+    esconderErroTempo();
+    
+    // Montar Date com a data de hoje e o horário digitado
+    const agora = new Date();
+    const dataHora = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), hh, mm, 0);
+    
+    if(tipo === 'inicio') {
+      dataInicio = dataHora;
+      atualizarTurnoPorHorario(dataInicio);
+    } else {
+      dataFim = dataHora;
+    }
+    
+    // Validar após ambos preenchidos
+    if(dataInicio && dataFim) {
+      validarHorarios();
+    }
+  } else {
+    // Apagou — limpa a data
+    if(tipo === 'inicio') dataInicio = null;
+    else dataFim = null;
+    esconderErroTempo();
+    esconderConfirmacao();
+  }
 }
+
+function validarHorarios() {
+  if(!dataInicio || !dataFim) return true;
+  
+  const diffMs = dataFim - dataInicio;
+  const diffH  = diffMs / 1000 / 3600;
+  const avisos = [];
+  
+  // Fim antes do início
+  if(diffMs < 0) {
+    mostrarErroTempo('O horário de fim não pode ser anterior ao de início. Verifique os horários.');
+    return false;
+  }
+  
+  // Jornada maior que 8 horas
+  if(diffH > 8) {
+    avisos.push(`⏱ O tempo de descarga é de ${Math.floor(diffH)}h${Math.round((diffH%1)*60)}min, o que ultrapassa 8 horas de jornada. Verifique se está correto.`);
+  }
+  
+  // Horário de início muito diferente do horário atual (mais de 4h de diferença)
+  const agora = new Date();
+  const diffInicioAgora = Math.abs(agora - dataInicio) / 1000 / 3600;
+  if(diffInicioAgora > 4) {
+    avisos.push(`🕐 O horário de início (${formatarHoraDisplay(dataInicio)}) está ${Math.floor(diffInicioAgora)}h diferente do horário atual. Verifique se está correto.`);
+  }
+  
+  if(avisos.length > 0) {
+    mostrarConfirmacao(avisos.join('<br><br>'));
+    return false; // aguarda confirmação
+  }
+  
+  esconderErroTempo();
+  esconderConfirmacao();
+  return true;
+}
+
+function formatarHoraDisplay(d) {
+  if(!d) return '--:--';
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function mostrarErroTempo(msg) {
+  const el = document.getElementById('err-tempo');
+  if(el) { el.innerHTML = '⚠ ' + msg; el.style.display = 'block'; }
+}
+
+function esconderErroTempo() {
+  const el = document.getElementById('err-tempo');
+  if(el) el.style.display = 'none';
+}
+
+function mostrarConfirmacao(msg) {
+  horarioSuspeito = true;
+  const el = document.getElementById('horario-confirm');
+  const msgEl = document.getElementById('horario-confirm-msg');
+  if(el) el.style.display = 'block';
+  if(msgEl) msgEl.innerHTML = msg;
+}
+
+function esconderConfirmacao() {
+  horarioSuspeito = false;
+  const el = document.getElementById('horario-confirm');
+  if(el) el.style.display = 'none';
+}
+
+function confirmarHorario() {
+  horarioSuspeito = false;
+  esconderConfirmacao();
+  esconderErroTempo();
+}
+
+function cancelarHorario() {
+  // Limpa o campo fim e reseta dataFim
+  const elFim = document.getElementById('f-hora-fim');
+  if(elFim) elFim.value = '';
+  const elInicio = document.getElementById('f-hora-inicio');
+  if(elInicio) { elInicio.value = ''; }
+  dataInicio = null;
+  dataFim = null;
+  esconderConfirmacao();
+  esconderErroTempo();
+}
+
+function registrarInicio() {} // mantido para compatibilidade
+function registrarFim() {}   // mantido para compatibilidade
 
 function atualizarTurnoPorHorario(data) {
   const h = data.getHours();
@@ -982,9 +1123,12 @@ function validarFormulario() {
   if(!validarCampo('conferente')) { ok = false; erros.push('Conferente'); }
   if(!validarCampo('peso')) { ok = false; erros.push('Peso'); }
   if(!dataInicio) {
-    document.getElementById('err-tempo').textContent = 'Registre o início do descarregamento';
-    document.getElementById('err-tempo').style.display = 'block';
+    mostrarErroTempo('Digite o horário de início do descarregamento.');
     ok = false; erros.push('Horário de início');
+  }
+  if(horarioSuspeito) {
+    ok = false;
+    toast('Confirme ou cancele o horário suspeito antes de salvar.', 'error');
   }
   if(!ok) toast('Campos obrigatórios: ' + erros.join(', '), 'error');
   return ok;
@@ -1013,7 +1157,7 @@ function salvarRegistro() {
       mac: document.getElementById('f-mac').value.trim(),
       origem: document.getElementById('f-origem').value.trim(),
       conferente: document.getElementById('f-conferente').value.trim(),
-      inicio: dataInicio ? dataInicio.toISOString() : null,
+      inicio: dataInicio ? dataInicio.toISOString() : new Date().toISOString(),
       fim: dataFim ? dataFim.toISOString() : null,
       paletizadas: parseInt(document.getElementById('f-paletizadas').value) || 0,
       soltas: parseInt(document.getElementById('f-soltas').value) || 0,
@@ -1171,8 +1315,7 @@ function limparFormulario() {
   turnoSelecionado = null; tipoSelecionado = null; dataInicio = null; dataFim = null;
   document.querySelectorAll('.turno-opt').forEach(o => o.className = 'turno-opt');
   document.querySelectorAll('.tipo-opt').forEach(o => o.className = 'tipo-opt');
-  ['f-frota','f-mac','f-conferente','f-paletizadas','f-soltas','f-peso','f-obs'].forEach(id => document.getElementById(id).value = '');
-  ['disp-inicio','disp-fim'].forEach(id => { const el = document.getElementById(id); el.textContent = '—'; el.classList.remove('filled'); });
+  ['f-frota','f-mac','f-conferente','f-paletizadas','f-soltas','f-peso','f-obs','f-hora-inicio','f-hora-fim'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-origem').value = '';
   document.getElementById('btn-iniciar').disabled = false;
   document.getElementById('btn-finalizar').disabled = true;
