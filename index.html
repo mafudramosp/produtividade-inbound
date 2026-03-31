@@ -233,6 +233,7 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
       <button class="nav-btn" id="nav-rank" onclick="showPage('rank')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Rank</button>
       <button class="nav-btn" id="nav-registros" onclick="showPage('registros')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>Registros</button>
       <button class="nav-btn" id="nav-novo" onclick="showPage('novo')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>Novo Registro</button>
+      <button class="nav-btn" id="nav-movimentacao" onclick="showPage('movimentacao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/><path d="M9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>Prod. Movimentação</button>
 <div class="nav-label">Configuração</div>
       <button class="nav-btn" id="nav-cadastro" onclick="showPage('cadastro')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Conferentes</button>
     </nav>
@@ -665,133 +666,142 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
         </div>
       </div>
 
-      <div class="page" id="page-turno">
-        <div style="max-width:760px;">
+      <!-- ============================================================ -->
+      <!-- NOVA PÁGINA: PRODUTIVIDADE POR MOVIMENTAÇÃO                  -->
+      <!-- ============================================================ -->
+      <div class="page" id="page-movimentacao">
+        <div class="dark-wrap">
 
-          <!-- Toggle Início / Passagem -->
-          <div style="display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px;gap:4px;">
-            <button id="btn-modo-inicio" onclick="setModoTurno('inicio')"
-              style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">
-              🟢 Início de Turno
-            </button>
-            <button id="btn-modo-passagem" onclick="setModoTurno('passagem')"
-              style="flex:1;padding:10px;border-radius:9px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">
-              🔴 Passagem de Turno
-            </button>
+          <!-- Cabeçalho -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:18px;font-weight:700;color:#00B200;font-family:'Poppins',sans-serif;letter-spacing:0.05em;">PRODUTIVIDADE POR MOVIMENTAÇÃO</div>
+              <div style="font-size:11px;color:#666;margin-top:2px;">Baseado na lógica Tragetta · Peso ÷ (H.Normais + H.Extras + H.MOA)</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <select id="mov-filter-mes" onchange="renderMovimentacao()" class="dark-select"></select>
+              <select id="mov-filter-turno" onchange="renderMovimentacao()" class="dark-select">
+                <option value="">Todos os turnos</option>
+                <option>1º Turno</option><option>2º Turno</option><option>3º Turno</option>
+              </select>
+            </div>
           </div>
 
-          <!-- ══════ MODO INÍCIO DE TURNO ══════ -->
-          <div id="modo-inicio">
-
-            <!-- Anexar imagem da tabela -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">
-                📷 Tabela de veículos (imagem)
-              </div>
-              <div id="img-drop-area"
-                onclick="document.getElementById('img-upload').click()"
-                style="border:2px dashed var(--border2);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface2);">
-                <div style="font-size:32px;margin-bottom:8px;">📎</div>
-                <div style="font-size:13px;color:var(--text2);">Clique para anexar a imagem da tabela</div>
-                <div style="font-size:11px;color:var(--text3);margin-top:4px;">JPG, PNG — a imagem aparecerá abaixo</div>
-              </div>
-              <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="carregarImagem(event)">
-              
-              <!-- Preview da imagem -->
-              <div id="img-preview-wrap" style="display:none;margin-top:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                  <div style="font-size:12px;font-weight:600;color:var(--text2);">Imagem anexada:</div>
-                  <button onclick="removerImagem()" style="border:none;background:none;color:var(--danger);font-size:12px;cursor:pointer;font-family:inherit;">✕ Remover</button>
-                </div>
-                <img id="img-preview" style="max-width:100%;border-radius:8px;border:1px solid var(--border);">
-              </div>
+          <!-- KPI Cards Topo -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="mov-kpi-grid">
+            <div class="dark-card" style="padding:16px;border-radius:12px;border-left:3px solid #00B200;">
+              <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Peso Total Movimentado</div>
+              <div id="mov-kpi-peso" style="font-size:26px;font-weight:700;color:#fff;">0 kg</div>
+              <div style="height:1px;background:linear-gradient(to right,#00B200,transparent);margin-top:10px;"></div>
             </div>
-
-            <!-- Observações início -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">
-                📝 Status Inicial / Observações
-              </div>
-              <textarea id="obs-inicio" rows="8" class="form-control"
-                placeholder="Ex:&#10;02 - Supera&#10;01 - Gimba&#10;01 - Adidas&#10;&#10;20 - Transferências 30/03&#10;19 - Trânsito&#10;&#10;Obs - ..."
-                style="resize:vertical;font-size:13px;line-height:1.8;"></textarea>
+            <div class="dark-card" style="padding:16px;border-radius:12px;border-left:3px solid #3b82f6;">
+              <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Prod. Média (kg/h)</div>
+              <div id="mov-kpi-prod" style="font-size:26px;font-weight:700;color:#3b82f6;">0,00</div>
+              <div style="height:1px;background:linear-gradient(to right,#3b82f6,transparent);margin-top:10px;"></div>
             </div>
-
-            <!-- Botão WhatsApp início -->
-            <a id="wpp-inicio-link" href="#" target="_blank" rel="noopener"
-              onclick="return montarMsgInicio(this)"
-              style="display:flex;width:100%;padding:14px;border-radius:12px;background:#25D366;color:#fff;font-size:14px;font-weight:700;cursor:pointer;align-items:center;justify-content:center;gap:10px;text-decoration:none;margin-bottom:8px;">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              Enviar Início de Turno via WhatsApp
-            </a>
-            <div style="font-size:11px;color:var(--text3);text-align:center;">
-              A imagem deve ser enviada separadamente no WhatsApp
+            <div class="dark-card" style="padding:16px;border-radius:12px;border-left:3px solid #f59e0b;">
+              <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Total Horas Trabalhadas</div>
+              <div id="mov-kpi-horas" style="font-size:26px;font-weight:700;color:#f59e0b;">0,0 h</div>
+              <div style="height:1px;background:linear-gradient(to right,#f59e0b,transparent);margin-top:10px;"></div>
             </div>
-
+            <div class="dark-card" style="padding:16px;border-radius:12px;border-left:3px solid #a855f7;">
+              <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Qtd. Operações</div>
+              <div id="mov-kpi-ops" style="font-size:26px;font-weight:700;color:#a855f7;">0</div>
+              <div style="height:1px;background:linear-gradient(to right,#a855f7,transparent);margin-top:10px;"></div>
+            </div>
           </div>
 
-          <!-- ══════ MODO PASSAGEM DE TURNO ══════ -->
-          <div id="modo-passagem" style="display:none;">
+          <!-- Alertas -->
+          <div id="mov-alertas" style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;"></div>
 
-            <!-- Filtros -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                <div style="font-size:13px;font-weight:600;color:var(--text);">Turno:</div>
-                <select id="pass-turno" onchange="renderPassagem()" class="filter-input">
-                  <option value="">Todos os turnos</option>
-                  <option>1º Turno</option>
-                  <option>2º Turno</option>
-                  <option>3º Turno</option>
+          <!-- Gráficos Principais -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+            <div class="dark-card" style="border-radius:12px;padding:16px;">
+              <div style="font-size:12px;color:#ccc;font-weight:600;margin-bottom:12px;">📦 Peso Movimentado por Dia (kg)</div>
+              <div style="position:relative;height:220px;"><canvas id="chartMovPeso"></canvas></div>
+            </div>
+            <div class="dark-card" style="border-radius:12px;padding:16px;">
+              <div style="font-size:12px;color:#ccc;font-weight:600;margin-bottom:12px;">⚡ Produtividade por Dia (kg/h)</div>
+              <div style="position:relative;height:220px;"><canvas id="chartMovProd"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Gráfico por Conferente + Horas -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+            <div class="dark-card" style="border-radius:12px;padding:16px;">
+              <div style="font-size:12px;color:#ccc;font-weight:600;margin-bottom:12px;">👷 Prod. por Conferente (kg/h)</div>
+              <div style="position:relative;height:220px;"><canvas id="chartMovConferente"></canvas></div>
+            </div>
+            <div class="dark-card" style="border-radius:12px;padding:16px;">
+              <div style="font-size:12px;color:#ccc;font-weight:600;margin-bottom:12px;">🕐 Distribuição de Horas por Turno</div>
+              <div style="position:relative;height:220px;"><canvas id="chartMovTurnos"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Painel Analítico por Conferente -->
+          <div class="dark-card" style="border-radius:12px;overflow:hidden;margin-bottom:16px;">
+            <div style="padding:14px 18px;border-bottom:1px solid #2a2a2a;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#ccc;">📊 Painel Analítico — Produtividade por Conferente</div>
+                <div style="font-size:10px;color:#555;margin-top:2px;">Baseado na fórmula: kg/h = Peso ÷ (H.Normais + H.Extras + H.MOA)</div>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span style="font-size:10px;color:#555;">Ordenar por:</span>
+                <select id="mov-sort" onchange="renderMovimentacao()" class="dark-select" style="font-size:11px;">
+                  <option value="prod">Produtividade</option>
+                  <option value="peso">Peso</option>
+                  <option value="ops">Operações</option>
+                  <option value="nome">Nome</option>
                 </select>
-                <select id="pass-data" onchange="renderPassagem()" class="filter-input">
-                  <option value="hoje">Hoje</option>
-                  <option value="ontem">Ontem</option>
-                </select>
-                <button onclick="renderPassagem()" class="btn btn-primary" style="padding:7px 14px;">Atualizar</button>
               </div>
             </div>
-
-            <!-- KPIs -->
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">🚛 Veículos</div>
-                <div id="pass-veiculos" style="font-size:28px;font-weight:800;color:var(--accent);">0</div>
-              </div>
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">\u2696\uFE0F Peso (kg)</div>
-                <div id="pass-peso" style="font-size:22px;font-weight:800;color:var(--accent);">0</div>
-              </div>
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">\u2705 Finalizados</div>
-                <div id="pass-finalizados" style="font-size:28px;font-weight:800;color:var(--accent);">0</div>
-              </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <thead>
+                  <tr style="background:#111;">
+                    <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">Conferente</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">Operações</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">Peso Total (kg)</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">H. Trabalhadas</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">Prod. kg/h</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;min-width:160px;">Performance</th>
+                    <th style="padding:10px 14px;text-align:center;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #222;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="mov-tabela-body">
+                  <tr class="empty-row"><td colspan="7" style="text-align:center;color:#555;padding:32px;">Sem dados no período</td></tr>
+                </tbody>
+              </table>
             </div>
-
-            <!-- Tabela de registros -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">📋 Registros do turno</div>
-              <div id="pass-lista" style="font-size:13px;color:var(--text2);"></div>
-            </div>
-
-            <!-- Observações passagem -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">📝 Observações / Pendências</div>
-              <textarea id="obs-passagem" rows="6" class="form-control"
-                placeholder="Ex:&#10;Pendências para o próximo turno...&#10;Obs - ..."
-                style="resize:vertical;font-size:13px;line-height:1.8;"></textarea>
-            </div>
-
-            <!-- Botão WhatsApp passagem -->
-            <a id="wpp-passagem-link" href="#" target="_blank" rel="noopener"
-              onclick="return montarMsgPassagem(this)"
-              style="display:flex;width:100%;padding:14px;border-radius:12px;background:#25D366;color:#fff;font-size:14px;font-weight:700;cursor:pointer;align-items:center;justify-content:center;gap:10px;text-decoration:none;">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              Enviar Passagem de Turno via WhatsApp
-            </a>
-
           </div>
+
+          <!-- Painel Analítico por Turno -->
+          <div class="dark-card" style="border-radius:12px;overflow:hidden;">
+            <div style="padding:14px 18px;border-bottom:1px solid #2a2a2a;">
+              <div style="font-size:13px;font-weight:700;color:#ccc;">📋 Resumo por Turno</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <thead>
+                  <tr style="background:#111;">
+                    <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;">Turno</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;">Operações</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;">Peso (kg)</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;">H. Trabalhadas</th>
+                    <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;">Prod. kg/h</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#555;text-transform:uppercase;border-bottom:1px solid #222;min-width:140px;">% do Total</th>
+                  </tr>
+                </thead>
+                <tbody id="mov-tabela-turno">
+                  <tr class="empty-row"><td colspan="6" style="text-align:center;color:#555;padding:32px;">Sem dados no período</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
+      <!-- FIM PRODUTIVIDADE POR MOVIMENTAÇÃO -->
 
       <div class="page" id="page-cadastro">
         <div style="max-width:500px;">
@@ -821,6 +831,7 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
       <button class="bnav-btn" id="bnav-novo" onclick="showPage('novo')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg><span>Novo</span></button>
       <button class="bnav-btn" id="bnav-rank" onclick="showPage('rank')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>Rank</span></button>
       <button class="bnav-btn" id="bnav-analise" onclick="showPage('analise')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg><span>Análise</span></button>
+<button class="bnav-btn" id="bnav-movimentacao" onclick="showPage('movimentacao')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>Moviment.</span></button>
 <button class="bnav-btn" id="bnav-cadastro" onclick="showPage('cadastro')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Conferentes</span></button>
     </div>
   </nav>
@@ -965,6 +976,283 @@ function fazerLogin() {
   }
 }
 
+// ============================================================
+//  PRODUTIVIDADE POR MOVIMENTAÇÃO — lógica Tragetta
+//  Fórmula: kg/h = Peso Total ÷ (H. Normais + H. Extras + H. MOA)
+//  H. Normais  = duração real do registro (início → fim)
+//  H. Extras   = horas além de 8h/registro (0 se < 8h)
+//  H. MOA      = estimativa 35% das horas normais (referência GRU)
+// ============================================================
+
+let chartMovPeso = null, chartMovProd = null, chartMovConferente = null, chartMovTurnos = null;
+
+function popularFiltroMov() {
+  const sel = document.getElementById('mov-filter-mes');
+  if (!sel) return;
+  const meses = [...new Set(registros.map(r => r.data ? r.data.substring(0,7) : '').filter(Boolean))].sort().reverse();
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos os meses</option>' + meses.map(m => `<option value="${m}">${formatarMesLabel(m)}</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+function formatarMesLabel(ym) {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${nomes[parseInt(m)-1]}/${y}`;
+}
+
+function calcHorasRegistro(r) {
+  // Retorna horas trabalhadas no registro usando tempo real (min)
+  const mins = r.tempoReal || r.tempo_real || 0;
+  if (mins > 0) return mins / 60;
+  // fallback: calcular pelo início/fim
+  if (r.inicio && r.fim) {
+    const [hi,mi] = r.inicio.split(':').map(Number);
+    const [hf,mf] = r.fim.split(':').map(Number);
+    let diff = (hf*60+mf) - (hi*60+mi);
+    if (diff < 0) diff += 24*60;
+    return diff / 60;
+  }
+  return 0;
+}
+
+function calcHorasExtra(hNormais) {
+  // Horas extras = horas além de 8h por operação
+  return Math.max(0, hNormais - 8);
+}
+
+function calcHorasMOA(hNormais) {
+  // MOA estimado: 35% das horas normais (baseado no padrão GRU Tragetta)
+  return hNormais * 0.35;
+}
+
+function calcProdutividade(peso, hNormais) {
+  if (hNormais <= 0 || peso <= 0) return 0;
+  const hExtra = calcHorasExtra(hNormais);
+  const hMOA   = calcHorasMOA(hNormais);
+  const total  = hNormais + hExtra + hMOA;
+  return total > 0 ? peso / total : 0;
+}
+
+function renderMovimentacao() {
+  popularFiltroMov();
+  const mes    = document.getElementById('mov-filter-mes')?.value || '';
+  const turno  = document.getElementById('mov-filter-turno')?.value || '';
+  const sort   = document.getElementById('mov-sort')?.value || 'prod';
+
+  let dados = registros.filter(r => {
+    const temPeso = (r.peso || r.pesoBruto || 0) > 0;
+    const matchMes = !mes || (r.data && r.data.startsWith(mes));
+    const matchTurno = !turno || r.turno === turno;
+    return temPeso && matchMes && matchTurno;
+  });
+
+  // ---------- KPIs ----------
+  let pesoTotal = 0, horasTotal = 0, ops = 0;
+  dados.forEach(r => {
+    const peso = parseFloat(r.peso || r.pesoBruto || 0);
+    const h = calcHorasRegistro(r);
+    pesoTotal += peso;
+    horasTotal += h;
+    ops++;
+  });
+  const prodMedia = calcProdutividade(pesoTotal, horasTotal);
+
+  document.getElementById('mov-kpi-peso').textContent = pesoTotal > 0 ? pesoTotal.toLocaleString('pt-BR') + ' kg' : '0 kg';
+  document.getElementById('mov-kpi-prod').textContent = prodMedia.toFixed(2).replace('.',',') + ' kg/h';
+  document.getElementById('mov-kpi-horas').textContent = horasTotal.toFixed(1).replace('.',',') + ' h';
+  document.getElementById('mov-kpi-ops').textContent = ops;
+
+  // ---------- Alertas ----------
+  const alertDiv = document.getElementById('mov-alertas');
+  const alertas = [];
+  if (prodMedia > 0) {
+    const refConf = 2.18; // referência conferente GRU planejado
+    const delta = ((prodMedia - refConf) / refConf * 100).toFixed(1);
+    const cor = prodMedia >= refConf ? '#00B200' : '#ef4444';
+    const icon = prodMedia >= refConf ? '✅' : '⚠️';
+    alertas.push(`<div style="background:#1a1a1a;border:1px solid ${cor};border-left:3px solid ${cor};border-radius:8px;padding:10px 14px;font-size:12px;color:#ccc;">${icon} <strong style="color:${cor};">Prod. Média: ${prodMedia.toFixed(2).replace('.',',')} kg/h</strong> — ${delta > 0 ? '+' : ''}${delta}% vs meta referência (2,18 kg/h)</div>`);
+  }
+  if (horasTotal > 0) {
+    const hExtra = dados.reduce((s,r) => s + calcHorasExtra(calcHorasRegistro(r)), 0);
+    const pctExtra = (hExtra / horasTotal * 100).toFixed(1);
+    const corE = hExtra > horasTotal * 0.3 ? '#f59e0b' : '#666';
+    alertas.push(`<div style="background:#1a1a1a;border:1px solid ${corE};border-left:3px solid ${corE};border-radius:8px;padding:10px 14px;font-size:12px;color:#ccc;">🕐 H.Extras estimadas: <strong style="color:${corE};">${hExtra.toFixed(1).replace('.',',')}h (${pctExtra}% do total)</strong></div>`);
+  }
+  alertDiv.innerHTML = alertas.join('');
+
+  // ---------- Gráfico peso por dia ----------
+  const porDia = {};
+  dados.forEach(r => {
+    const d = r.data || '';
+    if (!d) return;
+    if (!porDia[d]) porDia[d] = { peso: 0, horas: 0 };
+    porDia[d].peso += parseFloat(r.peso || r.pesoBruto || 0);
+    porDia[d].horas += calcHorasRegistro(r);
+  });
+  const diasSort = Object.keys(porDia).sort();
+  const labelsDia = diasSort.map(d => d.split('-').reverse().slice(0,2).join('/'));
+  const pesosDia = diasSort.map(d => porDia[d].peso);
+  const prodsDia = diasSort.map(d => {
+    const p = porDia[d];
+    return calcProdutividade(p.peso, p.horas);
+  });
+
+  const ctxPeso = document.getElementById('chartMovPeso');
+  if (ctxPeso) {
+    if (chartMovPeso) chartMovPeso.destroy();
+    chartMovPeso = new Chart(ctxPeso, {
+      type: 'bar',
+      data: { labels: labelsDia, datasets: [{ label:'Peso (kg)', data: pesosDia, backgroundColor: pesosDia.map(() => 'rgba(0,178,0,0.7)'), borderColor: '#00B200', borderWidth: 1, borderRadius: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color:'#777', font:{size:9} }, grid:{color:'#222'} }, y: { ticks: { color:'#777', font:{size:9} }, grid:{color:'#222'} } } }
+    });
+  }
+
+  const ctxProd = document.getElementById('chartMovProd');
+  if (ctxProd) {
+    if (chartMovProd) chartMovProd.destroy();
+    chartMovProd = new Chart(ctxProd, {
+      type: 'line',
+      data: { labels: labelsDia, datasets: [
+        { label:'Prod. kg/h', data: prodsDia, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#3b82f6' },
+        { label:'Meta ref.', data: diasSort.map(() => 2.18), borderColor: '#f59e0b', borderDash: [5,5], fill: false, pointRadius: 0, borderWidth: 1 }
+      ]},
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color:'#777', font:{size:10} } } }, scales: { x: { ticks:{color:'#777',font:{size:9}}, grid:{color:'#222'} }, y: { ticks:{color:'#777',font:{size:9}}, grid:{color:'#222'} } } }
+    });
+  }
+
+  // ---------- Gráfico por conferente ----------
+  const porConf = {};
+  dados.forEach(r => {
+    const c = r.conferente || '—';
+    if (!porConf[c]) porConf[c] = { peso: 0, horas: 0, ops: 0 };
+    porConf[c].peso  += parseFloat(r.peso || r.pesoBruto || 0);
+    porConf[c].horas += calcHorasRegistro(r);
+    porConf[c].ops++;
+  });
+  const confEntries = Object.entries(porConf).map(([nome, v]) => ({ nome, ...v, prod: calcProdutividade(v.peso, v.horas) }));
+  confEntries.sort((a,b) => b.prod - a.prod);
+
+  const ctxConf = document.getElementById('chartMovConferente');
+  if (ctxConf) {
+    if (chartMovConferente) chartMovConferente.destroy();
+    const cores = confEntries.map(e => e.prod >= 2.18 ? 'rgba(0,178,0,0.75)' : 'rgba(239,68,68,0.7)');
+    chartMovConferente = new Chart(ctxConf, {
+      type: 'bar',
+      data: { labels: confEntries.map(e => e.nome.split(' ')[0]), datasets: [{ label:'kg/h', data: confEntries.map(e => +e.prod.toFixed(2)), backgroundColor: cores, borderRadius: 4 }] },
+      options: { indexAxis:'y', responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false} }, scales: { x:{ticks:{color:'#777',font:{size:9}},grid:{color:'#222'}}, y:{ticks:{color:'#aaa',font:{size:10}},grid:{color:'#222'}} } }
+    });
+  }
+
+  // ---------- Gráfico por turno ----------
+  const porTurno = {'1º Turno':{peso:0,horas:0,ops:0},'2º Turno':{peso:0,horas:0,ops:0},'3º Turno':{peso:0,horas:0,ops:0}};
+  dados.forEach(r => {
+    const t = r.turno || '1º Turno';
+    if (porTurno[t]) {
+      porTurno[t].peso  += parseFloat(r.peso || r.pesoBruto || 0);
+      porTurno[t].horas += calcHorasRegistro(r);
+      porTurno[t].ops++;
+    }
+  });
+  const coresTurno = {'1º Turno':'rgba(37,99,235,0.75)','2º Turno':'rgba(124,58,237,0.75)','3º Turno':'rgba(219,39,119,0.75)'};
+  const ctxTurno = document.getElementById('chartMovTurnos');
+  if (ctxTurno) {
+    if (chartMovTurnos) chartMovTurnos.destroy();
+    chartMovTurnos = new Chart(ctxTurno, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(porTurno),
+        datasets: [{
+          data: Object.values(porTurno).map(v => +v.horas.toFixed(1)),
+          backgroundColor: Object.keys(porTurno).map(k => coresTurno[k]),
+          borderColor: '#161616', borderWidth: 2
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{color:'#888',font:{size:10},padding:10} } } }
+    });
+  }
+
+  // ---------- Tabela por conferente ----------
+  let sortedConf = [...confEntries];
+  if (sort === 'peso') sortedConf.sort((a,b) => b.peso - a.peso);
+  else if (sort === 'ops') sortedConf.sort((a,b) => b.ops - a.ops);
+  else if (sort === 'nome') sortedConf.sort((a,b) => a.nome.localeCompare(b.nome));
+  else sortedConf.sort((a,b) => b.prod - a.prod);
+
+  const maxProd = Math.max(...sortedConf.map(e => e.prod), 0.01);
+  const tbody = document.getElementById('mov-tabela-body');
+  if (tbody) {
+    if (sortedConf.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7" style="text-align:center;color:#555;padding:32px;">Sem dados no período selecionado</td></tr>';
+    } else {
+      tbody.innerHTML = sortedConf.map((e, i) => {
+        const pct = (e.prod / maxProd * 100).toFixed(0);
+        const cor = e.prod >= 2.18 ? '#00B200' : e.prod >= 1.5 ? '#f59e0b' : '#ef4444';
+        const status = e.prod >= 2.18 ? '<span style="background:#0d2e0d;color:#00B200;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;">✅ Acima meta</span>'
+                     : e.prod >= 1.5  ? '<span style="background:#2a1f0a;color:#f59e0b;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;">⚠️ Atenção</span>'
+                     :                  '<span style="background:#2a0f0f;color:#ef4444;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;">❌ Abaixo</span>';
+        const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}º`;
+        const hNorm = e.horas;
+        const hExtra = calcHorasExtra(hNorm);
+        const hMOA = calcHorasMOA(hNorm);
+        const hTotal = hNorm + hExtra + hMOA;
+        return `<tr>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;color:#ccc;font-weight:600;">
+            <span style="margin-right:6px;">${rank}</span>${e.nome}
+          </td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;color:#aaa;">${e.ops}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;color:#aaa;">${e.peso.toLocaleString('pt-BR')}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;">
+            <span style="color:#aaa;">${hTotal.toFixed(1).replace('.',',')}h</span>
+            <div style="font-size:9px;color:#555;margin-top:2px;">N:${hNorm.toFixed(1)} E:${hExtra.toFixed(1)} M:${hMOA.toFixed(1)}</div>
+          </td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;font-weight:700;color:${cor};font-size:14px;">${e.prod.toFixed(2).replace('.',',')}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;">
+            <div style="background:#222;border-radius:4px;height:8px;overflow:hidden;">
+              <div style="background:${cor};height:100%;width:${pct}%;border-radius:4px;transition:width 0.4s;"></div>
+            </div>
+            <div style="font-size:9px;color:#555;margin-top:2px;">${pct}% do melhor</div>
+          </td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:center;">${status}</td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  // ---------- Tabela por turno ----------
+  const tbodyT = document.getElementById('mov-tabela-turno');
+  if (tbodyT) {
+    const turnos = Object.entries(porTurno).filter(([,v]) => v.ops > 0);
+    if (turnos.length === 0) {
+      tbodyT.innerHTML = '<tr class="empty-row"><td colspan="6" style="text-align:center;color:#555;padding:32px;">Sem dados</td></tr>';
+    } else {
+      const pesoTotalT = turnos.reduce((s,[,v]) => s + v.peso, 0) || 1;
+      const corT = {'1º Turno':'#2563eb','2º Turno':'#7c3aed','3º Turno':'#db2777'};
+      tbodyT.innerHTML = turnos.map(([turno, v]) => {
+        const prod = calcProdutividade(v.peso, v.horas);
+        const pct = (v.peso / pesoTotalT * 100).toFixed(1);
+        const cor = corT[turno] || '#888';
+        return `<tr>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;font-weight:600;color:#ccc;">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:8px;"></span>${turno}
+          </td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;color:#aaa;">${v.ops}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;color:#aaa;">${v.peso.toLocaleString('pt-BR')}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;color:#aaa;">${v.horas.toFixed(1).replace('.',',')}h</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;text-align:right;font-weight:700;color:${prod >= 2.18 ? '#00B200' : '#f59e0b'};">${prod.toFixed(2).replace('.',',')}</td>
+          <td style="padding:10px 14px;border-bottom:1px solid #1e1e1e;">
+            <div style="background:#222;border-radius:4px;height:8px;overflow:hidden;margin-bottom:3px;">
+              <div style="background:${cor};height:100%;width:${pct}%;border-radius:4px;"></div>
+            </div>
+            <div style="font-size:10px;color:#555;">${pct}% do volume total</div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+  }
+}
+
 // ===================== ESTADO =====================
 // ============================================================
 //  CONFIGURAÇÃO GOOGLE SHEETS
@@ -998,9 +1286,9 @@ const titulos = {
   registros: 'Registros <span>/ Todos os registros</span>',
   novo: 'Novo Registro <span>/ Preencha os dados</span>',
   cadastro: 'Configurações <span>/ Conferentes</span>',
-  turno: 'Início e Passagem de Turno <span>/ Relatório</span>',
   analise: 'Análise <span>/ Movimentação por semana e mês</span>',
-  rank: 'Rank <span>/ Produtividade por conferente</span>'
+  rank: 'Rank <span>/ Produtividade por conferente</span>',
+  movimentacao: 'Prod. Movimentação <span>/ Dashboard analítico · lógica Tragetta</span>'
 };
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1011,10 +1299,10 @@ function showPage(id) {
   if(id === 'dashboard') { popularFiltrosMes(); renderDashboard(); }
   if(id === 'registros') { popularFiltrosMes(); renderTabela2(); }
   if(id === 'cadastro') { renderCadastro(); }
-  if(id === 'turno') { renderTurnoPage(); }
   if(id === 'novo') { detectarTurno(); }
   if(id === 'analise') { popularFiltrosMes(); renderAnalise(); }
   if(id === 'rank') { popularFiltrosMes(); rankTab='mes'; renderRankPage(); }
+  if(id === 'movimentacao') { popularFiltroMov(); renderMovimentacao(); }
   // Atualiza bottom nav
   document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
   const bnavBtn = document.getElementById('bnav-' + id);
@@ -1160,7 +1448,7 @@ function formatarHoraDisplay(d) {
 
 function mostrarErroTempo(msg) {
   const el = document.getElementById('err-tempo');
-  if(el) { el.innerHTML = '\u26A0 ' + msg; el.style.display = 'block'; }
+  if(el) { el.innerHTML = '⚠ ' + msg; el.style.display = 'block'; }
 }
 
 function esconderErroTempo() {
@@ -1409,7 +1697,7 @@ function mostrarSyncStatus(estado) {
     el.style.color = '#00B200';
     setTimeout(() => { if(el) el.textContent = ''; }, 3000);
   } else {
-    el.textContent = '\u26A0 Sem conexão';
+    el.textContent = '⚠ Sem conexão';
     el.style.color = '#ef4444';
   }
 }
@@ -2176,7 +2464,7 @@ function fecharConfigSheets() {
 async function testarConexaoSheets() {
   const url = document.getElementById('sheets-url-input').value.trim();
   const el   = document.getElementById('sheets-test-result');
-  if (!url) { el.textContent = '\u26A0 Cole a URL primeiro.'; el.style.color='#d97706'; return; }
+  if (!url) { el.textContent = '⚠ Cole a URL primeiro.'; el.style.color='#d97706'; return; }
   el.textContent = '⟳ Testando...'; el.style.color='#888';
   try {
     const res  = await fetch(url);
@@ -2804,204 +3092,6 @@ function fecharListaOrigemEditDelay() {
     const list = document.getElementById('ac-origem-edit-list');
     if(list) list.classList.remove('show');
   }, 200);
-}
-
-
-// ============================================================
-//  INÍCIO E PASSAGEM DE TURNO
-// ============================================================
-let modoTurnoAtual = 'inicio';
-let imagemBase64 = null;
-
-function setModoTurno(modo) {
-  modoTurnoAtual = modo;
-  const btnI = document.getElementById('btn-modo-inicio');
-  const btnP = document.getElementById('btn-modo-passagem');
-  const divI = document.getElementById('modo-inicio');
-  const divP = document.getElementById('modo-passagem');
-  if(modo === 'inicio') {
-    btnI.style.background = 'var(--accent)'; btnI.style.color = '#fff';
-    btnP.style.background = 'transparent'; btnP.style.color = 'var(--text2)';
-    divI.style.display = 'block'; divP.style.display = 'none';
-  } else {
-    btnP.style.background = '#ef4444'; btnP.style.color = '#fff';
-    btnI.style.background = 'transparent'; btnI.style.color = 'var(--text2)';
-    divP.style.display = 'block'; divI.style.display = 'none';
-    renderPassagem();
-  }
-}
-
-function renderTurnoPage() {
-  setModoTurno(modoTurnoAtual);
-}
-
-// ── IMAGEM ───────────────────────────────────────────────────
-function carregarImagem(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    imagemBase64 = e.target.result;
-    const preview = document.getElementById('img-preview');
-    const wrap    = document.getElementById('img-preview-wrap');
-    const drop    = document.getElementById('img-drop-area');
-    if(preview) preview.src = imagemBase64;
-    if(wrap)    wrap.style.display = 'block';
-    if(drop)    drop.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function removerImagem() {
-  imagemBase64 = null;
-  const preview = document.getElementById('img-preview');
-  const wrap    = document.getElementById('img-preview-wrap');
-  const drop    = document.getElementById('img-drop-area');
-  const input   = document.getElementById('img-upload');
-  if(preview) preview.src = '';
-  if(wrap)    wrap.style.display = 'none';
-  if(drop)    drop.style.display = 'block';
-  if(input)   input.value = '';
-}
-
-// ── WHATSAPP INÍCIO DE TURNO ─────────────────────────────────
-function montarMsgInicio(linkEl) {
-  var obs  = document.getElementById('obs-inicio') ? document.getElementById('obs-inicio').value.trim() : '';
-  var hoje = new Date().toLocaleDateString('pt-BR');
-  var hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-  var nl = '\n';
-  var sep = '----------------------------';
-  var msg = 'INICIO DE TURNO' + nl;
-  msg += 'Data: ' + hoje + ' | ' + hora + nl;
-  msg += sep + nl + nl;
-  msg += '*Bom Dia*' + nl + nl;
-  msg += '*Status Inicial*' + nl + nl;
-  if(obs) msg += obs + nl + nl;
-  if(imagemBase64) msg += '_(Tabela em imagem anexada separadamente)_' + nl + nl;
-  msg += sep + nl;
-  msg += '_Sistema Produtividade Inbound_';
-  linkEl.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-  return true;
-}
-
-// ── PASSAGEM DE TURNO ─────────────────────────────────────────
-function renderPassagem() {
-  const turnoSel = document.getElementById('pass-turno')?.value || '';
-  const dataSel  = document.getElementById('pass-data')?.value || 'hoje';
-
-  const hoje   = new Date();
-  const ontem  = new Date(); ontem.setDate(ontem.getDate() - 1);
-  const dataRef = dataSel === 'ontem'
-    ? ontem.toLocaleDateString('pt-BR')
-    : hoje.toLocaleDateString('pt-BR');
-
-  let regs = registros.filter(r => r.data === dataRef);
-  if(turnoSel) regs = regs.filter(r => r.turno === turnoSel);
-
-  const finalizados = regs.filter(r => r.status === 'Finalizado');
-  const emAndamento = regs.filter(r => r.status === 'Em andamento');
-  const pesoTotal   = finalizados.reduce((s, r) => s + (r.peso || 0), 0);
-
-  // KPIs
-  const elV = document.getElementById('pass-veiculos');
-  const elP = document.getElementById('pass-peso');
-  const elF = document.getElementById('pass-finalizados');
-  if(elV) elV.textContent = regs.length;
-  if(elP) elP.textContent = pesoTotal.toLocaleString('pt-BR');
-  if(elF) elF.textContent = finalizados.length;
-
-  // Agrupar por origem
-  const porOrigem = {};
-  regs.forEach(r => {
-    const key = r.origem || 'SEM ORIGEM';
-    if(!porOrigem[key]) porOrigem[key] = 0;
-    porOrigem[key]++;
-  });
-
-  const lista = document.getElementById('pass-lista');
-  if(!lista) return;
-
-  if(regs.length === 0) {
-    lista.innerHTML = '<div style="color:var(--text3);padding:16px;text-align:center;">Nenhum registro encontrado para este turno/data.</div>';
-    return;
-  }
-
-  // Tabela de registros
-  let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  html += '<thead><tr style="background:var(--surface2);">';
-  ['Posição','Origem/CLI','Frota','MAC/MEC','Conferente','Início','Fim','Peso (kg)','Status'].forEach(h => {
-    html += `<th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;">${h}</th>`;
-  });
-  html += '</tr></thead><tbody>';
-
-  regs.forEach((r, i) => {
-    const ini = r.inicio ? new Date(r.inicio).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '--';
-    const fim = r.fim    ? new Date(r.fim).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})    : '--';
-    const stCor = r.status === 'Finalizado' ? '#00B200' : '#f59e0b';
-    html += `<tr style="border-bottom:1px solid var(--border);">
-      <td style="padding:8px 10px;font-weight:700;color:var(--accent);">${i+1}ª</td>
-      <td style="padding:8px 10px;font-weight:600;color:var(--text);">${r.origem||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.frota||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.mac||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.conferente||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${ini}</td>
-      <td style="padding:8px 10px;color:var(--text);">${fim}</td>
-      <td style="padding:8px 10px;color:var(--text);">${(r.peso||0).toLocaleString('pt-BR')}</td>
-      <td style="padding:8px 10px;font-weight:700;color:${stCor};">${r.status||'-'}</td>
-    </tr>`;
-  });
-
-  html += '</tbody></table></div>';
-
-  if(emAndamento.length > 0) {
-    html += `<div style="margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;border-left:3px solid #f59e0b;">
-      <div style="font-size:11px;font-weight:700;color:#f59e0b;margin-bottom:4px;">\u26A0 Em andamento</div>
-      ${emAndamento.map(r=>`<div style="font-size:12px;color:var(--text);">↳ ${r.origem||'?'} — Frota ${r.frota} — Conf: ${r.conferente}</div>`).join('')}
-    </div>`;
-  }
-
-  lista.innerHTML = html;
-}
-
-// ── WHATSAPP PASSAGEM ─────────────────────────────────────────
-function montarMsgPassagem(linkEl) {
-  var turnoSel = document.getElementById('pass-turno') ? document.getElementById('pass-turno').value : '';
-  var dataSel  = document.getElementById('pass-data') ? document.getElementById('pass-data').value : 'hoje';
-  var obs      = document.getElementById('obs-passagem') ? document.getElementById('obs-passagem').value.trim() : '';
-  var hoje  = new Date();
-  var ontem = new Date(); ontem.setDate(ontem.getDate()-1);
-  var dataRef = dataSel === 'ontem' ? ontem.toLocaleDateString('pt-BR') : hoje.toLocaleDateString('pt-BR');
-  var hora = hoje.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  var regs = registros.filter(function(r){ return r.data === dataRef; });
-  if(turnoSel && turnoSel !== 'Todos') regs = regs.filter(function(r){ return r.turno === turnoSel; });
-  var finalizados = regs.filter(function(r){ return r.status === 'Finalizado'; });
-  var emAndamento = regs.filter(function(r){ return r.status === 'Em andamento'; });
-  var pesoTotal   = finalizados.reduce(function(s,r){ return s+(r.peso||0); }, 0);
-  var porOrigem = {};
-  regs.forEach(function(r){ var key=r.origem||'SEM ORIGEM'; if(!porOrigem[key])porOrigem[key]=0; porOrigem[key]++; });
-  var nl  = '\n';
-  var sep = '----------------------------';
-  var msg = 'PASSAGEM DE TURNO' + nl;
-  msg += 'Data: ' + dataRef + ' | ' + (turnoSel||'Todos') + ' | ' + hora + nl;
-  msg += sep + nl + nl;
-  msg += '*Segue Status Final*' + nl + nl;
-  Object.entries(porOrigem).sort(function(a,b){return b[1]-a[1];}).forEach(function(e){
-    msg += String(e[1]).padStart(2,'0') + ' - ' + e[0] + nl;
-  });
-  if(emAndamento.length > 0) {
-    msg += nl + 'Em andamento: ' + emAndamento.length + ' veiculo(s)' + nl;
-    emAndamento.forEach(function(r){ msg += '   -> ' + (r.origem||'?') + ' - Frota ' + r.frota + nl; });
-  }
-  msg += nl + sep + nl;
-  msg += 'RESUMO DO TURNO' + nl;
-  msg += 'Veiculos: *' + regs.length + '*' + nl;
-  msg += 'Peso total: *' + pesoTotal.toLocaleString('pt-BR') + ' kg*' + nl;
-  msg += 'Finalizados: *' + finalizados.length + '*' + nl;
-  msg += 'Em andamento: *' + emAndamento.length + '*' + nl;
-  if(obs) { msg += nl + sep + nl + 'Observacoes:' + nl + obs + nl; }
-  msg += nl + sep + nl + '_Sistema Produtividade Inbound_';
-  linkEl.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-  return true;
 }
 
 // ===================== INIT =====================
