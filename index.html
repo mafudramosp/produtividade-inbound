@@ -1092,8 +1092,16 @@ async function carregarDoSheets() {
       registros = dadosSheets;
       localStorage.setItem('prod_inbound', JSON.stringify(registros));
       popularFiltrosMes();
+      // Re-render todas as páginas para garantir atualização
       renderDashboard();
       renderTabela2();
+      // Re-render página atual se for analise ou rank
+      const paginaAtiva = document.querySelector('.page.active');
+      if(paginaAtiva) {
+        const pid = paginaAtiva.id.replace('page-','');
+        if(pid === 'analise') renderAnalise();
+        if(pid === 'rank') renderRankPage();
+      }
       mostrarSyncStatus('ok');
     } else {
       // Sheets vazio — envia dados locais se tiver
@@ -1114,6 +1122,22 @@ async function carregarDoSheets() {
 
 function salvarStorage() {
   localStorage.setItem('prod_inbound', JSON.stringify(registros));
+}
+
+function mostrarSyncStatus(estado) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  if (estado === 'carregando') {
+    el.textContent = '⟳ Sincronizando...';
+    el.style.color = '#f59e0b';
+  } else if (estado === 'ok') {
+    el.textContent = '✓ Sincronizado';
+    el.style.color = '#00B200';
+    setTimeout(() => { if(el) el.textContent = ''; }, 3000);
+  } else {
+    el.textContent = '⚠ Sem conexão';
+    el.style.color = '#ef4444';
+  }
 }
 
 async function salvarNoSheets(reg) {
@@ -2514,8 +2538,8 @@ popularFiltrosMes();
 renderDashboard();
 atualizarIconeTema(document.body.classList.contains('dark-theme'));
 if (SHEETS_URL) {
-  // Sempre carrega do Sheets ao abrir — é a fonte de verdade
-  setTimeout(carregarDoSheets, 1000);
+  // Carrega do Sheets imediatamente ao abrir
+  carregarDoSheets();
 }
 
 
