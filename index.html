@@ -665,134 +665,6 @@ body.dark-theme .badge-pend{background:#2a1f0a;color:#fcd34d;}
         </div>
       </div>
 
-      <div class="page" id="page-turno">
-        <div style="max-width:760px;">
-
-          <!-- Toggle Início / Passagem -->
-          <div style="display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px;gap:4px;">
-            <button id="btn-modo-inicio" onclick="setModoTurno('inicio')"
-              style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">
-              🟢 Início de Turno
-            </button>
-            <button id="btn-modo-passagem" onclick="setModoTurno('passagem')"
-              style="flex:1;padding:10px;border-radius:9px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;">
-              🔴 Passagem de Turno
-            </button>
-          </div>
-
-          <!-- ══════ MODO INÍCIO DE TURNO ══════ -->
-          <div id="modo-inicio">
-
-            <!-- Anexar imagem da tabela -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">
-                📷 Tabela de veículos (imagem)
-              </div>
-              <div id="img-drop-area"
-                onclick="document.getElementById('img-upload').click()"
-                style="border:2px dashed var(--border2);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface2);">
-                <div style="font-size:32px;margin-bottom:8px;">📎</div>
-                <div style="font-size:13px;color:var(--text2);">Clique para anexar a imagem da tabela</div>
-                <div style="font-size:11px;color:var(--text3);margin-top:4px;">JPG, PNG — a imagem aparecerá abaixo</div>
-              </div>
-              <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="carregarImagem(event)">
-              
-              <!-- Preview da imagem -->
-              <div id="img-preview-wrap" style="display:none;margin-top:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                  <div style="font-size:12px;font-weight:600;color:var(--text2);">Imagem anexada:</div>
-                  <button onclick="removerImagem()" style="border:none;background:none;color:var(--danger);font-size:12px;cursor:pointer;font-family:inherit;">✕ Remover</button>
-                </div>
-                <img id="img-preview" style="max-width:100%;border-radius:8px;border:1px solid var(--border);">
-              </div>
-            </div>
-
-            <!-- Observações início -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">
-                📝 Status Inicial / Observações
-              </div>
-              <textarea id="obs-inicio" rows="8" class="form-control"
-                placeholder="Ex:&#10;02 - Supera&#10;01 - Gimba&#10;01 - Adidas&#10;&#10;20 - Transferências 30/03&#10;19 - Trânsito&#10;&#10;Obs - ..."
-                style="resize:vertical;font-size:13px;line-height:1.8;"></textarea>
-            </div>
-
-            <!-- Botão WhatsApp início -->
-            <a id="wpp-inicio-link" href="#" target="_blank" rel="noopener"
-              onclick="return montarMsgInicio(this)"
-              style="display:flex;width:100%;padding:14px;border-radius:12px;background:#25D366;color:#fff;font-size:14px;font-weight:700;cursor:pointer;align-items:center;justify-content:center;gap:10px;text-decoration:none;margin-bottom:8px;">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              Enviar Início de Turno via WhatsApp
-            </a>
-            <div style="font-size:11px;color:var(--text3);text-align:center;">
-              A imagem deve ser enviada separadamente no WhatsApp
-            </div>
-
-          </div>
-
-          <!-- ══════ MODO PASSAGEM DE TURNO ══════ -->
-          <div id="modo-passagem" style="display:none;">
-
-            <!-- Filtros -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                <div style="font-size:13px;font-weight:600;color:var(--text);">Turno:</div>
-                <select id="pass-turno" onchange="renderPassagem()" class="filter-input">
-                  <option value="">Todos os turnos</option>
-                  <option>1º Turno</option>
-                  <option>2º Turno</option>
-                  <option>3º Turno</option>
-                </select>
-                <select id="pass-data" onchange="renderPassagem()" class="filter-input">
-                  <option value="hoje">Hoje</option>
-                  <option value="ontem">Ontem</option>
-                </select>
-                <button onclick="renderPassagem()" class="btn btn-primary" style="padding:7px 14px;">Atualizar</button>
-              </div>
-            </div>
-
-            <!-- KPIs -->
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">🚛 Veículos</div>
-                <div id="pass-veiculos" style="font-size:28px;font-weight:800;color:var(--accent);">0</div>
-              </div>
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">\u2696\uFE0F Peso (kg)</div>
-                <div id="pass-peso" style="font-size:22px;font-weight:800;color:var(--accent);">0</div>
-              </div>
-              <div class="card" style="text-align:center;padding:14px;">
-                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">\u2705 Finalizados</div>
-                <div id="pass-finalizados" style="font-size:28px;font-weight:800;color:var(--accent);">0</div>
-              </div>
-            </div>
-
-            <!-- Tabela de registros -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">📋 Registros do turno</div>
-              <div id="pass-lista" style="font-size:13px;color:var(--text2);"></div>
-            </div>
-
-            <!-- Observações passagem -->
-            <div class="card" style="margin-bottom:16px;">
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">📝 Observações / Pendências</div>
-              <textarea id="obs-passagem" rows="6" class="form-control"
-                placeholder="Ex:&#10;Pendências para o próximo turno...&#10;Obs - ..."
-                style="resize:vertical;font-size:13px;line-height:1.8;"></textarea>
-            </div>
-
-            <!-- Botão WhatsApp passagem -->
-            <a id="wpp-passagem-link" href="#" target="_blank" rel="noopener"
-              onclick="return montarMsgPassagem(this)"
-              style="display:flex;width:100%;padding:14px;border-radius:12px;background:#25D366;color:#fff;font-size:14px;font-weight:700;cursor:pointer;align-items:center;justify-content:center;gap:10px;text-decoration:none;">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-              Enviar Passagem de Turno via WhatsApp
-            </a>
-
-          </div>
-        </div>
-      </div>
-
       <div class="page" id="page-cadastro">
         <div style="max-width:500px;">
           <div class="form-card">
@@ -970,7 +842,7 @@ function fazerLogin() {
 //  CONFIGURAÇÃO GOOGLE SHEETS
 //  Após publicar o Apps Script, cole a URL abaixo:
 // ============================================================
-let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzp_ZRrAT5S4NhwxlYtOKkhavNcHXx_Ze6B-s7i3b9dUqAiOKTpho_VKW0hQwSgv6GPEg/exec';
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwqXnwUwHXQWrBhYTipUEkfKo7FCWTQ4XteBQZ36dULrG3IN34sXtt97q2MLqkk6-SEfg/exec';
 
 let registros = JSON.parse(localStorage.getItem('prod_inbound') || '[]');
 let syncPendente = false;
@@ -998,7 +870,6 @@ const titulos = {
   registros: 'Registros <span>/ Todos os registros</span>',
   novo: 'Novo Registro <span>/ Preencha os dados</span>',
   cadastro: 'Configurações <span>/ Conferentes</span>',
-  turno: 'Início e Passagem de Turno <span>/ Relatório</span>',
   analise: 'Análise <span>/ Movimentação por semana e mês</span>',
   rank: 'Rank <span>/ Produtividade por conferente</span>'
 };
@@ -1011,7 +882,6 @@ function showPage(id) {
   if(id === 'dashboard') { popularFiltrosMes(); renderDashboard(); }
   if(id === 'registros') { popularFiltrosMes(); renderTabela2(); }
   if(id === 'cadastro') { renderCadastro(); }
-  if(id === 'turno') { renderTurnoPage(); }
   if(id === 'novo') { detectarTurno(); }
   if(id === 'analise') { popularFiltrosMes(); renderAnalise(); }
   if(id === 'rank') { popularFiltrosMes(); rankTab='mes'; renderRankPage(); }
@@ -1160,7 +1030,7 @@ function formatarHoraDisplay(d) {
 
 function mostrarErroTempo(msg) {
   const el = document.getElementById('err-tempo');
-  if(el) { el.innerHTML = '\u26A0 ' + msg; el.style.display = 'block'; }
+  if(el) { el.innerHTML = '⚠ ' + msg; el.style.display = 'block'; }
 }
 
 function esconderErroTempo() {
@@ -1409,7 +1279,7 @@ function mostrarSyncStatus(estado) {
     el.style.color = '#00B200';
     setTimeout(() => { if(el) el.textContent = ''; }, 3000);
   } else {
-    el.textContent = '\u26A0 Sem conexão';
+    el.textContent = '⚠ Sem conexão';
     el.style.color = '#ef4444';
   }
 }
@@ -2176,7 +2046,7 @@ function fecharConfigSheets() {
 async function testarConexaoSheets() {
   const url = document.getElementById('sheets-url-input').value.trim();
   const el   = document.getElementById('sheets-test-result');
-  if (!url) { el.textContent = '\u26A0 Cole a URL primeiro.'; el.style.color='#d97706'; return; }
+  if (!url) { el.textContent = '⚠ Cole a URL primeiro.'; el.style.color='#d97706'; return; }
   el.textContent = '⟳ Testando...'; el.style.color='#888';
   try {
     const res  = await fetch(url);
@@ -2804,204 +2674,6 @@ function fecharListaOrigemEditDelay() {
     const list = document.getElementById('ac-origem-edit-list');
     if(list) list.classList.remove('show');
   }, 200);
-}
-
-
-// ============================================================
-//  INÍCIO E PASSAGEM DE TURNO
-// ============================================================
-let modoTurnoAtual = 'inicio';
-let imagemBase64 = null;
-
-function setModoTurno(modo) {
-  modoTurnoAtual = modo;
-  const btnI = document.getElementById('btn-modo-inicio');
-  const btnP = document.getElementById('btn-modo-passagem');
-  const divI = document.getElementById('modo-inicio');
-  const divP = document.getElementById('modo-passagem');
-  if(modo === 'inicio') {
-    btnI.style.background = 'var(--accent)'; btnI.style.color = '#fff';
-    btnP.style.background = 'transparent'; btnP.style.color = 'var(--text2)';
-    divI.style.display = 'block'; divP.style.display = 'none';
-  } else {
-    btnP.style.background = '#ef4444'; btnP.style.color = '#fff';
-    btnI.style.background = 'transparent'; btnI.style.color = 'var(--text2)';
-    divP.style.display = 'block'; divI.style.display = 'none';
-    renderPassagem();
-  }
-}
-
-function renderTurnoPage() {
-  setModoTurno(modoTurnoAtual);
-}
-
-// ── IMAGEM ───────────────────────────────────────────────────
-function carregarImagem(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    imagemBase64 = e.target.result;
-    const preview = document.getElementById('img-preview');
-    const wrap    = document.getElementById('img-preview-wrap');
-    const drop    = document.getElementById('img-drop-area');
-    if(preview) preview.src = imagemBase64;
-    if(wrap)    wrap.style.display = 'block';
-    if(drop)    drop.style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function removerImagem() {
-  imagemBase64 = null;
-  const preview = document.getElementById('img-preview');
-  const wrap    = document.getElementById('img-preview-wrap');
-  const drop    = document.getElementById('img-drop-area');
-  const input   = document.getElementById('img-upload');
-  if(preview) preview.src = '';
-  if(wrap)    wrap.style.display = 'none';
-  if(drop)    drop.style.display = 'block';
-  if(input)   input.value = '';
-}
-
-// ── WHATSAPP INÍCIO DE TURNO ─────────────────────────────────
-function montarMsgInicio(linkEl) {
-  var obs  = document.getElementById('obs-inicio') ? document.getElementById('obs-inicio').value.trim() : '';
-  var hoje = new Date().toLocaleDateString('pt-BR');
-  var hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-  var nl = '\n';
-  var sep = '----------------------------';
-  var msg = 'INICIO DE TURNO' + nl;
-  msg += 'Data: ' + hoje + ' | ' + hora + nl;
-  msg += sep + nl + nl;
-  msg += '*Bom Dia*' + nl + nl;
-  msg += '*Status Inicial*' + nl + nl;
-  if(obs) msg += obs + nl + nl;
-  if(imagemBase64) msg += '_(Tabela em imagem anexada separadamente)_' + nl + nl;
-  msg += sep + nl;
-  msg += '_Sistema Produtividade Inbound_';
-  linkEl.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-  return true;
-}
-
-// ── PASSAGEM DE TURNO ─────────────────────────────────────────
-function renderPassagem() {
-  const turnoSel = document.getElementById('pass-turno')?.value || '';
-  const dataSel  = document.getElementById('pass-data')?.value || 'hoje';
-
-  const hoje   = new Date();
-  const ontem  = new Date(); ontem.setDate(ontem.getDate() - 1);
-  const dataRef = dataSel === 'ontem'
-    ? ontem.toLocaleDateString('pt-BR')
-    : hoje.toLocaleDateString('pt-BR');
-
-  let regs = registros.filter(r => r.data === dataRef);
-  if(turnoSel) regs = regs.filter(r => r.turno === turnoSel);
-
-  const finalizados = regs.filter(r => r.status === 'Finalizado');
-  const emAndamento = regs.filter(r => r.status === 'Em andamento');
-  const pesoTotal   = finalizados.reduce((s, r) => s + (r.peso || 0), 0);
-
-  // KPIs
-  const elV = document.getElementById('pass-veiculos');
-  const elP = document.getElementById('pass-peso');
-  const elF = document.getElementById('pass-finalizados');
-  if(elV) elV.textContent = regs.length;
-  if(elP) elP.textContent = pesoTotal.toLocaleString('pt-BR');
-  if(elF) elF.textContent = finalizados.length;
-
-  // Agrupar por origem
-  const porOrigem = {};
-  regs.forEach(r => {
-    const key = r.origem || 'SEM ORIGEM';
-    if(!porOrigem[key]) porOrigem[key] = 0;
-    porOrigem[key]++;
-  });
-
-  const lista = document.getElementById('pass-lista');
-  if(!lista) return;
-
-  if(regs.length === 0) {
-    lista.innerHTML = '<div style="color:var(--text3);padding:16px;text-align:center;">Nenhum registro encontrado para este turno/data.</div>';
-    return;
-  }
-
-  // Tabela de registros
-  let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  html += '<thead><tr style="background:var(--surface2);">';
-  ['Posição','Origem/CLI','Frota','MAC/MEC','Conferente','Início','Fim','Peso (kg)','Status'].forEach(h => {
-    html += `<th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;">${h}</th>`;
-  });
-  html += '</tr></thead><tbody>';
-
-  regs.forEach((r, i) => {
-    const ini = r.inicio ? new Date(r.inicio).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '--';
-    const fim = r.fim    ? new Date(r.fim).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})    : '--';
-    const stCor = r.status === 'Finalizado' ? '#00B200' : '#f59e0b';
-    html += `<tr style="border-bottom:1px solid var(--border);">
-      <td style="padding:8px 10px;font-weight:700;color:var(--accent);">${i+1}ª</td>
-      <td style="padding:8px 10px;font-weight:600;color:var(--text);">${r.origem||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.frota||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.mac||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${r.conferente||'-'}</td>
-      <td style="padding:8px 10px;color:var(--text);">${ini}</td>
-      <td style="padding:8px 10px;color:var(--text);">${fim}</td>
-      <td style="padding:8px 10px;color:var(--text);">${(r.peso||0).toLocaleString('pt-BR')}</td>
-      <td style="padding:8px 10px;font-weight:700;color:${stCor};">${r.status||'-'}</td>
-    </tr>`;
-  });
-
-  html += '</tbody></table></div>';
-
-  if(emAndamento.length > 0) {
-    html += `<div style="margin-top:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;border-left:3px solid #f59e0b;">
-      <div style="font-size:11px;font-weight:700;color:#f59e0b;margin-bottom:4px;">\u26A0 Em andamento</div>
-      ${emAndamento.map(r=>`<div style="font-size:12px;color:var(--text);">↳ ${r.origem||'?'} — Frota ${r.frota} — Conf: ${r.conferente}</div>`).join('')}
-    </div>`;
-  }
-
-  lista.innerHTML = html;
-}
-
-// ── WHATSAPP PASSAGEM ─────────────────────────────────────────
-function montarMsgPassagem(linkEl) {
-  var turnoSel = document.getElementById('pass-turno') ? document.getElementById('pass-turno').value : '';
-  var dataSel  = document.getElementById('pass-data') ? document.getElementById('pass-data').value : 'hoje';
-  var obs      = document.getElementById('obs-passagem') ? document.getElementById('obs-passagem').value.trim() : '';
-  var hoje  = new Date();
-  var ontem = new Date(); ontem.setDate(ontem.getDate()-1);
-  var dataRef = dataSel === 'ontem' ? ontem.toLocaleDateString('pt-BR') : hoje.toLocaleDateString('pt-BR');
-  var hora = hoje.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  var regs = registros.filter(function(r){ return r.data === dataRef; });
-  if(turnoSel && turnoSel !== 'Todos') regs = regs.filter(function(r){ return r.turno === turnoSel; });
-  var finalizados = regs.filter(function(r){ return r.status === 'Finalizado'; });
-  var emAndamento = regs.filter(function(r){ return r.status === 'Em andamento'; });
-  var pesoTotal   = finalizados.reduce(function(s,r){ return s+(r.peso||0); }, 0);
-  var porOrigem = {};
-  regs.forEach(function(r){ var key=r.origem||'SEM ORIGEM'; if(!porOrigem[key])porOrigem[key]=0; porOrigem[key]++; });
-  var nl  = '\n';
-  var sep = '----------------------------';
-  var msg = 'PASSAGEM DE TURNO' + nl;
-  msg += 'Data: ' + dataRef + ' | ' + (turnoSel||'Todos') + ' | ' + hora + nl;
-  msg += sep + nl + nl;
-  msg += '*Segue Status Final*' + nl + nl;
-  Object.entries(porOrigem).sort(function(a,b){return b[1]-a[1];}).forEach(function(e){
-    msg += String(e[1]).padStart(2,'0') + ' - ' + e[0] + nl;
-  });
-  if(emAndamento.length > 0) {
-    msg += nl + 'Em andamento: ' + emAndamento.length + ' veiculo(s)' + nl;
-    emAndamento.forEach(function(r){ msg += '   -> ' + (r.origem||'?') + ' - Frota ' + r.frota + nl; });
-  }
-  msg += nl + sep + nl;
-  msg += 'RESUMO DO TURNO' + nl;
-  msg += 'Veiculos: *' + regs.length + '*' + nl;
-  msg += 'Peso total: *' + pesoTotal.toLocaleString('pt-BR') + ' kg*' + nl;
-  msg += 'Finalizados: *' + finalizados.length + '*' + nl;
-  msg += 'Em andamento: *' + emAndamento.length + '*' + nl;
-  if(obs) { msg += nl + sep + nl + 'Observacoes:' + nl + obs + nl; }
-  msg += nl + sep + nl + '_Sistema Produtividade Inbound_';
-  linkEl.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
-  return true;
 }
 
 // ===================== INIT =====================
